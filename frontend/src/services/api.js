@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://deepklarity-assessment.onrender.com",
+  baseURL: "https://deepklarity-assessment.onrender.com/api",
 });
 
 export default API;
