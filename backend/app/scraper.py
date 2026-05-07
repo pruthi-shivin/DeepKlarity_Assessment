@@ -6,9 +6,7 @@ import json
 def scrape_recipe(url):
 
     headers = {
-        "User-Agent": (
-            "Mozilla/5.0"
-        )
+        "User-Agent": "Mozilla/5.0"
     }
 
     response = requests.get(
@@ -17,6 +15,7 @@ def scrape_recipe(url):
     )
 
     if response.status_code != 200:
+
         raise Exception(
             f"Failed to fetch URL: {response.status_code}"
         )
@@ -34,6 +33,9 @@ def scrape_recipe(url):
     for script in scripts:
 
         try:
+
+            if not script.string:
+                continue
 
             data = json.loads(
                 script.string
@@ -53,13 +55,12 @@ def scrape_recipe(url):
             elif isinstance(data, dict):
 
                 if data.get("@type") == "Recipe":
+
                     return data
 
-                graph = data.get("@graph")
+                if "@graph" in data:
 
-                if graph:
-
-                    for item in graph:
+                    for item in data["@graph"]:
 
                         if (
                             isinstance(item, dict)
@@ -68,7 +69,7 @@ def scrape_recipe(url):
 
                             return item
 
-        except:
+        except Exception:
             continue
 
     raise Exception(

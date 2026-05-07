@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from ..database import get_db
 from ..schemas import RecipeURLRequest
-from ..scraper import extract_recipe_content
+from ..scraper import scrape_recipe
 from ..llm_service import generate_recipe_data
 from ..crud import create_recipe, get_all_recipes, get_recipe_by_id
 
@@ -22,10 +22,10 @@ def extract_recipe(
 
     try:
 
-        scraped_data = extract_recipe_content(request.url)
+        recipe_schema = scrape_recipe(url_data.url)
 
         generated_recipe = generate_recipe_data(
-            scraped_data["recipe_schema"]
+            recipe_schema
         )
 
         generated_recipe["url"] = request.url
