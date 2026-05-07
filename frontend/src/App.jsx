@@ -83,7 +83,7 @@ function App() {
     <div className="app">
 
       <h1 className="title">
-        Recipe Extractor & Meal Planner
+        Recipe Extractor
       </h1>
 
 

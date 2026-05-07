@@ -171,8 +171,6 @@ Includes:
 sample_data.txt
 sample_output_1.json
 sample_output_2.json
-sample_output_3.json
-sample_output_4.json
 
 
 Prompt Templates:
