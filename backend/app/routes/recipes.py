@@ -30,6 +30,7 @@ def extract_recipe(recipe_input: RecipeURL):
         db: Session = SessionLocal()
 
         new_recipe = Recipe(
+            url=recipe_input.url,
             title=generated_recipe["title"],
             cuisine=generated_recipe["cuisine"],
             prep_time=generated_recipe["prep_time"],
