@@ -1,0 +1,12 @@
+Extract the following recipe information from the provided content:
+
+- Recipe title
+- Cuisine
+- Ingredients with quantity, unit, and item
+- Step-by-step instructions
+- Preparation time
+- Cooking time
+- Total time
+- Servings
+
+Return the response in structured JSON format.

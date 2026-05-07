@@ -1,0 +1,9 @@
+Suggest healthier or alternative ingredient substitutions for the recipe.
+
+Consider:
+- Dairy-free alternatives
+- Low-fat alternatives
+- Sugar replacements
+- Gluten-free options
+
+Return substitutions as a list.

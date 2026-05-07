@@ -1,0 +1,9 @@
+Estimate the nutritional information for the recipe based on the ingredients and servings.
+
+Include:
+- Calories
+- Protein
+- Carbohydrates
+- Fat
+
+Return concise nutritional estimates in JSON format.

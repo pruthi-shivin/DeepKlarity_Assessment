@@ -173,6 +173,26 @@ def generate_recipe_data(recipe_schema):
     }
 
 
+    raw_servings = recipe_schema.get(
+        "recipeYield",
+        2
+    )
+
+    if isinstance(raw_servings, list):
+        raw_servings = raw_servings[0]
+
+    try:
+
+        servings = int(
+            "".join(
+                filter(str.isdigit, str(raw_servings))
+            )
+        )
+
+    except:
+        servings = 2
+
+
     return {
 
         "title": recipe_schema.get(
@@ -200,10 +220,7 @@ def generate_recipe_data(recipe_schema):
             ""
         ),
 
-        "servings": recipe_schema.get(
-            "recipeYield",
-            2
-        ),
+        "servings": servings,
 
         "difficulty": difficulty,
 

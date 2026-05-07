@@ -1,0 +1,7 @@
+sample input 1: https://www.bbcgoodfood.com/recipes/salmon-risotto
+
+sample input 2: https://www.allrecipes.com/recipe/24074/alysias-basic-meat-lasagna/
+
+sample input 3: https://www.allrecipes.com/recipe/23891/grilled-cheese-sandwich/
+
+sample input 4: https://www.food.com/recipe/quick-n-easy-meatballs-n-gravy-33836
