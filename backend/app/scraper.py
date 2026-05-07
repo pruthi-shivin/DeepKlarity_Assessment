@@ -3,23 +3,17 @@ from bs4 import BeautifulSoup
 import json
 
 
-headers = {
-    "User-Agent": (
-        "Mozilla/5.0 "
-        "(Windows NT 10.0; Win64; x64) "
-        "AppleWebKit/537.36 "
-        "(KHTML, like Gecko) "
-        "Chrome/122.0.0.0 Safari/537.36"
-    )
-}
+def scrape_recipe(url):
 
-
-def extract_recipe_content(url: str):
+    headers = {
+        "User-Agent": (
+            "Mozilla/5.0"
+        )
+    }
 
     response = requests.get(
         url,
-        headers=headers,
-        timeout=15
+        headers=headers
     )
 
     if response.status_code != 200:
@@ -27,72 +21,56 @@ def extract_recipe_content(url: str):
             f"Failed to fetch URL: {response.status_code}"
         )
 
-    soup = BeautifulSoup(response.text, "lxml")
+    soup = BeautifulSoup(
+        response.text,
+        "lxml"
+    )
 
     scripts = soup.find_all(
         "script",
         type="application/ld+json"
     )
 
-    recipe_schema = None
-
     for script in scripts:
 
         try:
 
-            if not script.string:
-                continue
+            data = json.loads(
+                script.string
+            )
 
-            data = json.loads(script.string)
+            if isinstance(data, list):
 
-            def find_recipe(obj):
-
-                if isinstance(obj, dict):
-
-                    obj_type = obj.get("@type")
+                for item in data:
 
                     if (
-                        obj_type == "Recipe"
-                        or (
-                            isinstance(obj_type, list)
-                            and "Recipe" in obj_type
-                        )
+                        isinstance(item, dict)
+                        and item.get("@type") == "Recipe"
                     ):
-                        return obj
 
-                    for value in obj.values():
+                        return item
 
-                        result = find_recipe(value)
+            elif isinstance(data, dict):
 
-                        if result:
-                            return result
+                if data.get("@type") == "Recipe":
+                    return data
 
-                elif isinstance(obj, list):
+                graph = data.get("@graph")
 
-                    for item in obj:
+                if graph:
 
-                        result = find_recipe(item)
+                    for item in graph:
 
-                        if result:
-                            return result
+                        if (
+                            isinstance(item, dict)
+                            and item.get("@type") == "Recipe"
+                        ):
 
-                return None
-
-            recipe_schema = find_recipe(data)
-
-            if recipe_schema:
-                break
+                            return item
 
         except:
             continue
 
-    text = soup.get_text(
-        separator=" ",
-        strip=True
+    raise Exception(
+        "No recipe schema found"
     )
-
-    return {
-        "raw_text": text[:4000],
-        "html": response.text,
-        "recipe_schema": recipe_schema
-    }
