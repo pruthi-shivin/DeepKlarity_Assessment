@@ -1,11 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, HTTPException
 from sqlalchemy.orm import Session
 
-from ..database import get_db
-from ..schemas import RecipeURLRequest
+from ..database import SessionLocal
+from ..models import Recipe
+from ..schemas import RecipeURL
 from ..scraper import scrape_recipe
 from ..llm_service import generate_recipe_data
-from ..crud import create_recipe, get_all_recipes, get_recipe_by_id
 
 
 router = APIRouter(
@@ -15,50 +15,59 @@ router = APIRouter(
 
 
 @router.post("/extract")
-def extract_recipe(
-    request: RecipeURLRequest,
-    db: Session = Depends(get_db)
-):
+def extract_recipe(recipe_input: RecipeURL):
 
     try:
 
-        recipe_schema = scrape_recipe(url_data.url)
+        recipe_schema = scrape_recipe(
+            recipe_input.url
+        )
 
         generated_recipe = generate_recipe_data(
             recipe_schema
         )
 
-        generated_recipe["url"] = request.url
-        generated_recipe["raw_content"] = scraped_data["raw_text"]
+        db: Session = SessionLocal()
 
-        saved_recipe = create_recipe(
-            db,
-            generated_recipe
+        new_recipe = Recipe(
+            title=generated_recipe["title"],
+            cuisine=generated_recipe["cuisine"],
+            prep_time=generated_recipe["prep_time"],
+            cook_time=generated_recipe["cook_time"],
+            total_time=generated_recipe["total_time"],
+            servings=generated_recipe["servings"],
+            difficulty=generated_recipe["difficulty"],
+            ingredients=generated_recipe["ingredients"],
+            instructions=generated_recipe["instructions"],
+            nutrition_estimate=generated_recipe["nutrition_estimate"],
+            substitutions=generated_recipe["substitutions"],
+            shopping_list=generated_recipe["shopping_list"],
+            related_recipes=generated_recipe["related_recipes"]
         )
 
-        return saved_recipe
+        db.add(new_recipe)
+        db.commit()
+        db.refresh(new_recipe)
+
+        return new_recipe
 
     except Exception as e:
+
         raise HTTPException(
             status_code=500,
             detail=str(e)
         )
 
 
-@router.get("/")
-def get_recipes(db: Session = Depends(get_db)):
-    return get_all_recipes(db)
+@router.get("")
+def get_recipes():
 
+    db: Session = SessionLocal()
 
-@router.get("/{recipe_id}")
-def get_recipe(recipe_id: int, db: Session = Depends(get_db)):
+    recipes = db.query(
+        Recipe
+    ).order_by(
+        Recipe.created_at.desc()
+    ).all()
 
-    recipe = get_recipe_by_id(db, recipe_id)
-
-    if not recipe:
-        raise HTTPException(
-            status_code=404,
-            detail="Recipe not found"
-        )
-
-    return recipe
+    return recipes

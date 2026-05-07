@@ -3,7 +3,7 @@ from typing import List, Dict, Any
 from datetime import datetime
 
 
-class RecipeURLRequest(BaseModel):
+class RecipeURL(BaseModel):
     url: str
 
 
